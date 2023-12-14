@@ -46,7 +46,7 @@ uvicorn main:app
 
 # 📃 3. API Specification and Documentation
 
-### `POST /v1/context_extractor`
+### `POST /v1/context`
 
 #### API Function
 API is used to extract context information of chosen attributes from an user's query. To achieve the same, Few-shot learning has been implemented which requires a set of 'examples' and necessary 'instructions' to be given to LLM (openAI) in order to generate an answer in the instructed format. Configuration of 'instructions' and 'examples' are available in 'config.ini'.

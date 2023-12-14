@@ -75,7 +75,7 @@ def get_health() -> HealthCheck:
     return HealthCheck(status="OK")
 
 
-@app.post("/v1/context_extractor", tags=["API for fetching query context information"])
+@app.post("/v1/context", tags=["API for fetching query context information"])
 async def query_context_extraction(request: ContextRequest):
     load_dotenv()
 
