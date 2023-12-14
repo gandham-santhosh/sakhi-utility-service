@@ -164,7 +164,7 @@ async def translator(request: TranslationRequest) -> TranslationResponse:
     if request.output.language is not None:
         target_language = request.output.language.strip().lower()
     if request.output.format is not None:
-        target_format = request.output.format.strip()
+        target_format = request.output.format.strip().lower()
 
     logger.info(
         {"text": text, "audio": audio, "source_language": source_language, "target_language": target_language,

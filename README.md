@@ -58,9 +58,9 @@ en,bn,gu,hi,kn,ml,mr,or,pa,ta,te
 
 #### Request
 
-Required inputs are 'text', 'audio' and 'source_language'.
+Required inputs are 'text', 'audio' and 'language'.
 
-Either of the 'text'(string) or 'audio'(string) should be present. If both the values are given, exception is thrown. Another requirement is that the 'source_language' should be same as the one given in text and audio (i.e, if you pass English as 'source_language', then your 'text'/'audio' should contain queries in English language). The audio should either contain a publicly downloadable url of mp3 file or base64 encoded text of the mp3.
+Either of the 'text'(string) or 'audio'(string) should be present. If both the values are given, exception is thrown. Another requirement is that the 'language' should be same as the one given in text and audio (i.e, if you pass English as 'language', then your 'text'/'audio' should contain queries in English language). The audio should either contain a publicly downloadable url of mp3 file or base64 encoded text of the mp3.
 
 ```json
 {
@@ -104,9 +104,9 @@ en,bn,gu,hi,kn,ml,mr,or,pa,ta,te
 
 #### Request
 
-Required inputs are 'text', 'audio', 'source_language', 'target_language' and 'target_format'.
+Required inputs are 'input.text', 'input.audio', 'input.language', 'output.language' and 'output.format'.
 
-Either of the 'text'(string) or 'audio'(string) should be present. If both the values are given, exception is thrown. Another requirement is that the 'source_language' should be same as the one given in text and audio (i.e, if you pass English as 'source_language', then your 'text'/'audio' should contain queries in English language). The audio should either contain a publicly downloadable url of mp3 file or base64 encoded text of the mp3. If 'target_language' is not passed in the request, 'English' will be chosen. If 'target_format' is not passed in the request, 'text' will be chosen.
+Either of the 'text'(string) or 'audio'(string) should be present in the 'input'. If both the values are given, exception is thrown. Another requirement is that the 'input.language' should be same as the one given in text and audio (i.e, if you pass English as 'input.language', then your 'text'/'audio' should contain queries in English language). The audio should either contain a publicly downloadable url of mp3 file or base64 encoded text of the mp3. If 'output.language' is not passed in the request, 'English' will be chosen. If 'output.format' is not passed in the request, 'text' will be chosen.
 
 ```json
 {
