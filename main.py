@@ -27,18 +27,25 @@ class QueryInputModel(BaseModel):
     text: str = None
     audio: str = None
 
+
 class QueryOuputModel(BaseModel):
     format: str = None
     audio: str = None
     language: str = None
 
+
 class TranslationRequest(BaseModel):
     input: QueryInputModel
     output: QueryOuputModel
 
+
+class OutputResponse(BaseModel):
+    text: str = None
+    audio: str = None
+
+
 class TranslationResponse(BaseModel):
-    translated_text: str = None
-    translated_audio: str = None
+    output: OutputResponse = None
 
 
 config = configparser.ConfigParser()
@@ -233,8 +240,10 @@ async def translator(request: TranslationRequest) -> TranslationResponse:
             trans_audio = convert_to_audio(trans_text, target_language)
 
     response = TranslationResponse()
-    response.translated_text = trans_text
-    response.translated_audio = trans_audio
+    opResp = OutputResponse()
+    opResp.text = trans_text
+    opResp.audio = trans_audio
+    response.output = opResp
     logger.info(msg=response)
     return response
 

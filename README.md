@@ -125,8 +125,10 @@ Either of the 'text'(string) or 'audio'(string) should be present in the 'input'
 
 ```json
 {
-    "translated_text": "ಮಕ್ಕಳಿಗೆ ಆಟವಾಡಲು ಕಲಿಸುವುದು ಹೇಗೆ?",
-    "translated_audio": null
+    "output": {
+        "text": "ಮಕ್ಕಳಿಗೆ ಆಟವಾಡಲು ಕಲಿಸುವುದು ಹೇಗೆ?",
+        "audio": null
+    }
 }
 ```
 
