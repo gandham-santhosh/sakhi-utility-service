@@ -65,7 +65,7 @@ Either of the 'text'(string) or 'audio'(string) should be present. If both the v
 ```json
 {
     "text": "How to Teach Kids to Play Games",
-    "source_language": "en"
+    "language": "en"
 }
 ```
 

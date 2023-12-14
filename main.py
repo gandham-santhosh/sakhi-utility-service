@@ -19,7 +19,7 @@ class HealthCheck(BaseModel):
 class ContextRequest(BaseModel):
     text: str = None
     audio: str = None
-    source_language: str = None
+    language: str = None
 
 
 class QueryInputModel(BaseModel):
@@ -75,16 +75,15 @@ async def query_context_extraction(request: ContextRequest):
     text = None
     audio = None
     source_language = None
-    answer = None
     load_dotenv()
 
-    logger.info({"text": request.text, "audio": request.audio, "source_language": request.source_language})
+    logger.info({"text": request.text, "audio": request.audio, "source_language": request.language})
     if request.text is not None:
         text = request.text.strip()
     if request.audio is not None:
         audio = request.audio.strip()
-    if request.source_language is not None:
-        source_language = request.source_language.strip().lower()
+    if request.language is not None:
+        source_language = request.language.strip().lower()
 
     few_shot_config = config['few_shot.config']
 
