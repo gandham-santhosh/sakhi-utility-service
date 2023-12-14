@@ -22,17 +22,23 @@ class ContextRequest(BaseModel):
     source_language: str = None
 
 
-class TranslationRequest(BaseModel):
+class QueryInputModel(BaseModel):
+    language: str = None
     text: str = None
     audio: str = None
-    source_language: str = None
-    target_language: str = "English"
-    target_format: str = "text"
 
+class QueryOuputModel(BaseModel):
+    format: str = None
+    audio: str = None
+    language: str = None
+
+class TranslationRequest(BaseModel):
+    input: QueryInputModel
+    output: QueryOuputModel
 
 class TranslationResponse(BaseModel):
-    trans_text: str = None
-    trans_audio: str = None
+    translated_text: str = None
+    translated_audio: str = None
 
 
 config = configparser.ConfigParser()
@@ -150,16 +156,16 @@ async def translator(request: TranslationRequest) -> TranslationResponse:
     trans_text = None
     trans_audio = None
 
-    if request.text is not None:
-        text = request.text.strip()
-    if request.audio is not None:
-        audio = request.audio.strip()
-    if request.source_language is not None:
-        source_language = request.source_language.strip().lower()
-    if request.target_language is not None:
-        target_language = request.target_language.strip().lower()
-    if request.target_format is not None:
-        target_format = request.target_format.strip()
+    if request.input.text is not None:
+        text = request.input.text.strip()
+    if request.input.audio is not None:
+        audio = request.input.audio.strip()
+    if request.input.language is not None:
+        source_language = request.input.language.strip().lower()
+    if request.output.language is not None:
+        target_language = request.output.language.strip().lower()
+    if request.output.format is not None:
+        target_format = request.output.format.strip()
 
     logger.info(
         {"text": text, "audio": audio, "source_language": source_language, "target_language": target_language,
@@ -228,8 +234,8 @@ async def translator(request: TranslationRequest) -> TranslationResponse:
             trans_audio = convert_to_audio(trans_text, target_language)
 
     response = TranslationResponse()
-    response.trans_text = trans_text
-    response.trans_audio = trans_audio
+    response.translated_text = trans_text
+    response.translated_audio = trans_audio
     logger.info(msg=response)
     return response
 

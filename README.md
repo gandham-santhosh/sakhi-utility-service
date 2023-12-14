@@ -110,10 +110,14 @@ Either of the 'text'(string) or 'audio'(string) should be present. If both the v
 
 ```json
 {
-    "text": "How to Teach Kids to Play Games",
-    "source_language": "en",
-    "target_language": "kn",
-    "target_format": "audio"
+    "input": {
+        "text": "How to Teach Kids to Play Games",
+        "language": "en"
+    },
+    "output": {
+        "language": "kn",
+        "format": "text"
+    }
 }
 ```
 
@@ -121,8 +125,8 @@ Either of the 'text'(string) or 'audio'(string) should be present. If both the v
 
 ```json
 {
-    "trans_text": "",
-    "trans_audio": "https://ax2cel5zyviy.compat.objectstorage.ap-hyderabad-1.oraclecloud.com/sbdjb-kathaasaagara/audio-output-20231214-142536.mp3"
+    "translated_text": "ಮಕ್ಕಳಿಗೆ ಆಟವಾಡಲು ಕಲಿಸುವುದು ಹೇಗೆ?",
+    "translated_audio": null
 }
 ```
 
