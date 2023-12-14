@@ -46,7 +46,7 @@ uvicorn main:app
 
 # 📃 3. API Specification and Documentation
 
-### `POST /context_extractor`
+### `POST /v1/context_extractor`
 
 #### API Function
 API is used to extract context information of chosen attributes from an user's query. To achieve the same, Few-shot learning has been implemented which requires a set of 'examples' and necessary 'instructions' to be given to LLM (openAI) in order to generate an answer in the instructed format. Configuration of 'instructions' and 'examples' are available in 'config.ini'.
@@ -92,7 +92,7 @@ Either of the 'text'(string) or 'audio'(string) should be present. If both the v
 
 ---
 
-### `POST /translation`
+### `POST /v1/translation`
 
 #### API Function
 API is used to achieve translation of text/audio from one language to another language in text/audio format. To achieve the same, Bhashini has been integrated. OCI object storage has been used to store translated audio files when audio is chosen as target output format.
