@@ -173,7 +173,9 @@ async def translator(request: TranslationRequest) -> TranslationResponse:
         raise HTTPException(status_code=422, detail="Both 'text' and 'audio' cannot be taken as input! Either 'text' "
                                                     "or 'audio' is allowed.")
     elif source_language is None or source_language == "":
-        raise HTTPException(status_code=400, detail="Invalid Request! Please provide Source Language,!")
+        raise HTTPException(status_code=400, detail="Invalid Request! Please provide valid source Language!")
+    elif target_format != "text" and target_format != "audio":
+        raise HTTPException(status_code=400, detail="Please provide valid target format: text or audio!")
     elif (source_language == target_language) and (
             (text is not None and text != "" and target_format == "text") or (
             audio is not None and audio != "" and target_format == "audio")):
