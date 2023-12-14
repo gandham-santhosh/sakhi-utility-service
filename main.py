@@ -45,7 +45,7 @@ class OutputResponse(BaseModel):
 
 
 class TranslationResponse(BaseModel):
-    output: OutputResponse = None
+    translation: OutputResponse = None
 
 
 config = configparser.ConfigParser()
@@ -243,7 +243,7 @@ async def translator(request: TranslationRequest) -> TranslationResponse:
     opResp = OutputResponse()
     opResp.text = trans_text
     opResp.audio = trans_audio
-    response.output = opResp
+    response.translation = opResp
     logger.info(msg=response)
     return response
 
