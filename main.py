@@ -75,7 +75,7 @@ def get_health() -> HealthCheck:
     return HealthCheck(status="OK")
 
 
-@app.post("/context_extractor", tags=["API for fetching query context information"])
+@app.post("/v1/context_extractor", tags=["API for fetching query context information"])
 async def query_context_extraction(request: ContextRequest):
     load_dotenv()
 
@@ -150,7 +150,7 @@ async def query_context_extraction(request: ContextRequest):
     return response
 
 
-@app.post("/translation", tags=["API for translation of text and audio in English and Indic languages"])
+@app.post("/v1/translation", tags=["API for translation of text and audio in English and Indic languages"])
 async def translator(request: TranslationRequest) -> TranslationResponse:
     load_dotenv()
 
