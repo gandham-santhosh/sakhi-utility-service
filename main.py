@@ -37,7 +37,7 @@ class TranslationResponse(BaseModel):
 
 config = configparser.ConfigParser()
 config.read('config.ini')
-language_code_map = config['lang_code']
+language_code_list = config['lang_code']["supported_lang_codes"].split(",")
 
 
 @app.get(
@@ -78,7 +78,7 @@ async def query_context_extraction(request: ContextRequest):
     if request.audio is not None:
         audio = request.audio.strip()
     if request.source_language is not None:
-        source_language = request.source_language.strip()
+        source_language = request.source_language.strip().lower()
 
     few_shot_config = config['few_shot.config']
 
@@ -94,20 +94,19 @@ async def query_context_extraction(request: ContextRequest):
         raise HTTPException(status_code=400, detail="Invalid Request! Please provide Source Language,!")
     else:
         try:
-            src_lang_code = language_code_map[source_language.lower()]
-            if src_lang_code is None or src_lang_code == "":
+            if source_language is None or source_language == "" or source_language not in language_code_list:
                 raise HTTPException(status_code=400, detail="Unsupported language!")
         except Exception as ex:
             raise HTTPException(status_code=400, detail="Unsupported language!")
 
         if text is not None and text != "":
-            logger.info({"text": text, "src_lang_code": src_lang_code})
-            eng_text, error_message = translate_text_to_english(text, src_lang_code)
+            logger.info({"text": text, "source_language": source_language})
+            eng_text, error_message = translate_text_to_english(text, source_language)
         else:
             if not is_url(audio) and not is_base64(audio):
                 raise HTTPException(status_code=422, detail="Invalid audio input!")
-            logger.info({"src_lang_code:", src_lang_code})
-            src_lang_text, eng_text, error_message = transcribe_audio_to_reg_eng_text(audio, src_lang_code)
+            logger.info({"source_language:", source_language})
+            src_lang_text, eng_text, error_message = transcribe_audio_to_reg_eng_text(audio, source_language)
             logger.info({"src_lang_text:", src_lang_text, "eng_text:", eng_text})
 
         try:
@@ -156,9 +155,9 @@ async def translator(request: TranslationRequest) -> TranslationResponse:
     if request.audio is not None:
         audio = request.audio.strip()
     if request.source_language is not None:
-        source_language = request.source_language.strip()
+        source_language = request.source_language.strip().lower()
     if request.target_language is not None:
-        target_language = request.target_language.strip()
+        target_language = request.target_language.strip().lower()
     if request.target_format is not None:
         target_format = request.target_format.strip()
 
@@ -183,52 +182,50 @@ async def translator(request: TranslationRequest) -> TranslationResponse:
                                                     "Input Format and Output Format combination.")
     else:
         try:
-            src_lang_code = language_code_map[source_language]
-            if src_lang_code is None or src_lang_code == "":
+            if source_language is None or source_language == "" or source_language not in language_code_list:
                 raise HTTPException(status_code=400, detail="Unsupported source language!")
         except Exception as ex:
             raise HTTPException(status_code=400, detail="Unsupported source language!")
 
         try:
-            tgt_lang_code = language_code_map[target_language.lower()]
-            if tgt_lang_code is None or tgt_lang_code == "":
+            if target_language is None or target_language == "" or target_language not in language_code_list:
                 raise HTTPException(status_code=400, detail="Unsupported target language!")
         except Exception as ex:
             raise HTTPException(status_code=400, detail="Unsupported target language!")
 
         if target_format == "text" and text is not None and text != "":
             logger.info("TRANSLATE TEXT TO TEXT OF OTHER LANGUAGE::: ")
-            logger.info({"text": text, "src_lang_code": src_lang_code, "tgt_lang_code": tgt_lang_code})
-            trans_text, error_message = translate_text(text, src_lang_code, tgt_lang_code)
-        elif target_format == "audio" and text is not None and text != "" and src_lang_code == tgt_lang_code:
+            logger.info({"text": text, "source_language": source_language, "target_language": target_language})
+            trans_text, error_message = translate_text(text, source_language, target_language)
+        elif target_format == "audio" and text is not None and text != "" and source_language == target_language:
             logger.info("TRANSLATE TEXT TO AUDIO OF SAME LANGUAGE::: ")
-            logger.info({"text": text, "src_lang_code": src_lang_code})
-            trans_audio = convert_to_audio(text, src_lang_code)
-        elif target_format == "audio" and text is not None and text != "" and src_lang_code != tgt_lang_code:
+            logger.info({"text": text, "source_language": source_language})
+            trans_audio = convert_to_audio(text, source_language)
+        elif target_format == "audio" and text is not None and text != "" and source_language != target_language:
             logger.info("TRANSLATE TEXT TO AUDIO OF OTHER LANGUAGE::: ")
-            logger.info({"text": text, "src_lang_code": src_lang_code, "tgt_lang_code": tgt_lang_code})
-            trans_text, error_message = translate_text(text, src_lang_code, tgt_lang_code)
-            trans_audio = convert_to_audio(trans_text, tgt_lang_code)
-        elif target_format == "text" and audio is not None and audio != "" and src_lang_code == tgt_lang_code:
+            logger.info({"text": text, "source_language": source_language, "target_language": target_language})
+            trans_text, error_message = translate_text(text, source_language, target_language)
+            trans_audio = convert_to_audio(trans_text, target_language)
+        elif target_format == "text" and audio is not None and audio != "" and source_language == target_language:
             if not is_url(audio) and not is_base64(audio):
                 raise HTTPException(status_code=422, detail="Invalid audio input!")
             logger.info("TRANSLATE AUDIO TO TEXT OF SAME LANGUAGE::: ")
-            logger.info({"text": text, "src_lang_code": src_lang_code})
-            trans_text = audio_input_to_text(audio, src_lang_code)
-        elif target_format == "text" and audio is not None and audio != "" and src_lang_code != tgt_lang_code:
+            logger.info({"text": text, "source_language": source_language})
+            trans_text = audio_input_to_text(audio, source_language)
+        elif target_format == "text" and audio is not None and audio != "" and source_language != target_language:
             if not is_url(audio) and not is_base64(audio):
                 raise HTTPException(status_code=422, detail="Invalid audio input!")
             logger.info("TRANSLATE AUDIO TO TEXT OF OTHER LANGUAGE::: ")
-            logger.info({"text": text, "src_lang_code": src_lang_code, "tgt_lang_code": tgt_lang_code})
-            trans_text_same_lang = audio_input_to_text(audio, src_lang_code)
-            trans_text, error_message = translate_text(trans_text_same_lang, src_lang_code, tgt_lang_code)
+            logger.info({"text": text, "source_language": source_language, "target_language": target_language})
+            trans_text_same_lang = audio_input_to_text(audio, source_language)
+            trans_text, error_message = translate_text(trans_text_same_lang, source_language, target_language)
         elif target_format == "audio" and audio is not None and audio != "":
             if not is_url(audio) and not is_base64(audio):
                 raise HTTPException(status_code=422, detail="Invalid audio input!")
             logger.info("TRANSLATE AUDIO TO AUDIO OF OTHER LANGUAGE::: ")
-            src_trans_text = audio_input_to_text(audio, src_lang_code)
-            trans_text, error_message = translate_text(src_trans_text, src_lang_code, tgt_lang_code)
-            trans_audio = convert_to_audio(trans_text, tgt_lang_code)
+            src_trans_text = audio_input_to_text(audio, source_language)
+            trans_text, error_message = translate_text(src_trans_text, source_language, target_language)
+            trans_audio = convert_to_audio(trans_text, target_language)
 
     response = TranslationResponse()
     response.trans_text = trans_text
@@ -254,8 +251,8 @@ def is_url(string):
         return False
 
 
-def convert_to_audio(text, tgt_lang_code):
-    output_file, error_message = convert_text_to_audio(text, tgt_lang_code)
+def convert_to_audio(text, target_language):
+    output_file, error_message = convert_text_to_audio(text, target_language)
     if output_file is not None:
         upload_file_object(output_file.name)
         trans_audio_url, error_message = give_public_url(output_file.name)
