@@ -51,6 +51,21 @@ uvicorn main:app
 #### API Function
 API is used to extract context information of chosen attributes from an user's query. To achieve the same, Few-shot learning has been implemented which requires a set of 'examples' and necessary 'instructions' to be given to LLM (openAI) in order to generate an answer in the instructed format. Configuration of 'instructions' and 'examples' are available in 'config.ini'.
 
+#### Supported languages in request:
+```text
+English
+Bengali
+Gujarati
+Hindi
+Kannada
+Malayalam
+Marathi
+Oriya
+Punjabi
+Tamil
+Telugu
+```
+
 #### Request
 
 Required inputs are 'text', 'audio' and 'source_language'.
@@ -91,6 +106,21 @@ Either of the 'text'(string) or 'audio'(string) should be present. If both the v
 
 #### API Function
 API is used to achieve translation of text/audio from one language to another language in text/audio format. To achieve the same, Bhashini has been integrated. OCI object storage has been used to store translated audio files when audio is chosen as target output format.
+
+#### Supported languages in request:
+```text
+English
+Bengali
+Gujarati
+Hindi
+Kannada
+Malayalam
+Marathi
+Oriya
+Punjabi
+Tamil
+Telugu
+```
 
 #### Request
 
