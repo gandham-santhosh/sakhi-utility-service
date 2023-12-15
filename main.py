@@ -135,8 +135,9 @@ async def query_context_extraction(request: ContextRequest):
         print("query:: ", eng_text)
         try:
             response = await invokeLLM(instructions, examples, eng_text)
-            print("response:: ", response)
-            answer = json.loads(response["answer"].replace("\'", "\""))
+            strResp = json.dumps(response["answer"]).replace("\\\"answer\\\": ", "")
+            jsonResp = json.loads(strResp)
+            answer = json.loads(jsonResp)
             print("answer:: ", answer)
         except Exception as ex:
             print(type(ex))  # the exception type
@@ -246,6 +247,7 @@ async def translator(request: TranslationRequest) -> TranslationResponse:
     response.translation = opResp
     logger.info(msg=response)
     return response
+
 
 def convert_to_audio(text, target_language):
     output_file, error_message = convert_text_to_audio(text, target_language)
