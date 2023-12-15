@@ -17,6 +17,6 @@ RUN apt-get update && apt install build-essential --fix-missing -y
 RUN apt-get install ffmpeg -y
 COPY requirements.txt /root/
 RUN pip3 install -r requirements.txt
-COPY main.py cloud_storage_oci.py config.ini few_shot_util.py io_processing.py translator.py logger.py script.sh /root/
+COPY main.py cloud_storage_oci.py config.ini few_shot_util.py io_processing.py translator.py audio_verifier_util.py logger.py script.sh /root/
 EXPOSE 8000
 ENTRYPOINT ["bash","script.sh"]
