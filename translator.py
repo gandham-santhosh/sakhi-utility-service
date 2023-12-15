@@ -1,13 +1,12 @@
 import base64
-import binascii
 import json
 import os
-from io import BytesIO
-from urllib.parse import urlparse
 
 import requests
 from google.cloud import texttospeech, speech, translate
 from pydub import AudioSegment
+
+from audio_verifier_util import is_url, is_base64
 
 asr_mapping = {
     "bn": "ai4bharat/conformer-multilingual-indo_aryan-gpu--t4",
@@ -46,14 +45,6 @@ tts_mapping = {
 }
 
 
-def is_url(string):
-    try:
-        result = urlparse(string)
-        return all([result.scheme, result.netloc])
-    except ValueError:
-        return False
-
-
 def get_encoded_string(audio):
     if is_url(audio):
         local_filename = "local_file.mp3"
@@ -62,7 +53,10 @@ def get_encoded_string(audio):
                 f.write(r.content)
     elif is_base64(audio):
         local_filename = "local_file.mp3"
-        base64_to_mp3(audio, local_filename)
+        decoded_audio_content = base64.b64decode(audio)
+        output_mp3_file = open(local_filename, "wb")
+        output_mp3_file.write(decoded_audio_content)
+        output_mp3_file.close()
     else:
         local_filename = audio
 
@@ -254,17 +248,3 @@ def audio_input_to_text(audio_file, input_language):
     return indic_text
 
 
-def is_base64(base64_string):
-    try:
-        base64.b64decode(base64_string)
-        return True
-    except (binascii.Error, UnicodeDecodeError):
-        # If an error occurs during decoding, the string is not Base64
-        return False
-
-
-def base64_to_mp3(base64_string, output_filename='output.mp3'):
-    decoded_audio_content = base64.b64decode(base64_string)
-    output_mp3_file = open(output_filename, "wb")
-    output_mp3_file.write(decoded_audio_content)
-    output_mp3_file.close()

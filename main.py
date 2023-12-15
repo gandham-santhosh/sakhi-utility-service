@@ -247,24 +247,6 @@ async def translator(request: TranslationRequest) -> TranslationResponse:
     logger.info(msg=response)
     return response
 
-
-def is_base64(base64_string):
-    try:
-        base64.b64decode(base64_string)
-        return True
-    except (binascii.Error, UnicodeDecodeError):
-        # If an error occurs during decoding, the string is not Base64
-        return False
-
-
-def is_url(string):
-    try:
-        result = urlparse(string)
-        return all([result.scheme, result.netloc])
-    except ValueError:
-        return False
-
-
 def convert_to_audio(text, target_language):
     output_file, error_message = convert_text_to_audio(text, target_language)
     if output_file is not None:
