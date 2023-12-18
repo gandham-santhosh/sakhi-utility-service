@@ -30,7 +30,7 @@ def few_shots(instructions, examples, question):
     """
 
 gpt = models.OpenAI("gpt-3.5-turbo", api_key=os.environ["OPENAI_API_KEY"])
-
+gpt.max_calls = 50
 
 async def invokeLLM(instructions, examples, question):
     prompt = few_shots(instructions, examples, question)

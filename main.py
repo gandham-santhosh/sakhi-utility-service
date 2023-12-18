@@ -125,24 +125,25 @@ async def query_context_extraction(request: ContextRequest):
             instructions = few_shot_config['instructions']
             examples = json.loads(few_shot_config['examples'])
         except Exception as ex:
-            print(type(ex))  # the exception type
-            print(ex.args)  # arguments stored in .args
-            print(ex)
+            logger.info(type(ex))  # the exception type
+            logger.info(ex.args)  # arguments stored in .args
+            logger.info(ex)
             raise HTTPException(status_code=503, detail="Unable to parse configurations!")
 
-        print("instructions:: ", instructions)
-        print("examples:: ", examples)
-        print("query:: ", eng_text)
+        logger.info("instructions:: ", instructions)
+        logger.info("examples:: ", examples)
+        logger.info("query:: ", eng_text)
         try:
             response = await invokeLLM(instructions, examples, eng_text)
+            logger.info("LLM response:: ", response)
             strResp = json.dumps(response["answer"]).replace("\\\"answer\\\": ", "")
             jsonResp = json.loads(strResp)
             answer = json.loads(jsonResp)
-            print("answer:: ", answer)
+            logger.info("answer:: ", answer)
         except Exception as ex:
-            print(type(ex))  # the exception type
-            print(ex.args)  # arguments stored in .args
-            print(ex)
+            logger.info(type(ex))  # the exception type
+            logger.info(ex.args)  # arguments stored in .args
+            logger.info(ex)
             raise HTTPException(status_code=503, detail="Failed to generate a response!")
 
     response = {
