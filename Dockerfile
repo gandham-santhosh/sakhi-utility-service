@@ -13,10 +13,11 @@ ENV PATH=$PATH:/root/.cargo/bin \
     OCI_BUCKET_NAME=$OCI_BUCKET_NAME \
     OCI_SECRET_ACCESS_KEY=$OCI_SECRET_ACCESS_KEY \
     OCI_ACCESS_KEY_ID=$OCI_ACCESS_KEY_ID
+    TELEMETRY_ENDPOINT_URL=$TELEMETRY_ENDPOINT_URL
 RUN apt-get update && apt install build-essential --fix-missing -y
 RUN apt-get install ffmpeg -y
 COPY requirements.txt /root/
 RUN pip3 install -r requirements.txt
-COPY main.py cloud_storage_oci.py config.ini few_shot_util.py io_processing.py translator.py audio_verifier_util.py logger.py script.sh /root/
+COPY main.py cloud_storage_oci.py config.ini few_shot_util.py io_processing.py translator.py audio_verifier_util.py logger.py script.sh telemetry_logger.py /root/
 EXPOSE 8000
 ENTRYPOINT ["bash","script.sh"]
