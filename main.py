@@ -1,12 +1,14 @@
 import configparser
 
-from fastapi import FastAPI, HTTPException, status
+from fastapi import FastAPI, HTTPException, status, Request
+from starlette.types import Message
 from pydantic import BaseModel
 
 from cloud_storage_oci import *
 from few_shot_util import *
 from io_processing import *
 from logger import logger
+from telemetry_logger import TelemetryLogger
 
 app = FastAPI()
 
@@ -51,6 +53,36 @@ class TranslationResponse(BaseModel):
 config = configparser.ConfigParser()
 config.read('config.ini')
 language_code_list = config['lang_code']["supported_lang_codes"].split(",")
+
+
+async def set_body(request: Request, body: bytes):
+    async def receive() -> Message:
+        return {"type": "http.request", "body": body}
+
+    request._receive = receive
+
+
+async def get_body(request: Request) -> bytes:
+    body = await request.body()
+    await set_body(request, body)
+    return body
+
+
+telemetryLogger = TelemetryLogger()
+
+
+@app.middleware("http")
+async def add_process_time_header(request: Request, call_next):
+    start_time = time.time()
+    await set_body(request, await request.body())
+    body = json.loads(await get_body(request))
+    response = await call_next(request)
+    process_time = time.time() - start_time
+    if "v1" in str(request.url):
+        event = telemetryLogger.prepare_log_event(request, body)
+        telemetryLogger.add_event(event)
+    response.headers["X-Process-Time"] = str(process_time)
+    return response
 
 
 @app.get(
