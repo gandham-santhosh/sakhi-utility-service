@@ -28,7 +28,7 @@ class QueryInputModel(BaseModel):
     audio: str = None
 
 
-class QueryOuputModel(BaseModel):
+class QueryOutputModel(BaseModel):
     format: str = None
     audio: str = None
     language: str = None
@@ -36,7 +36,7 @@ class QueryOuputModel(BaseModel):
 
 class TranslationRequest(BaseModel):
     input: QueryInputModel
-    output: QueryOuputModel
+    output: QueryOutputModel
 
 
 class OutputResponse(BaseModel):
@@ -82,6 +82,10 @@ async def query_context_extraction(request: ContextRequest):
     text = None
     audio = None
     source_language = None
+    updated_answer = None
+
+    min_words_length = config['min_words']['length']
+
     load_dotenv()
 
     logger.info({"text": request.text, "audio": request.audio, "source_language": request.language})
@@ -108,11 +112,12 @@ async def query_context_extraction(request: ContextRequest):
         try:
             if source_language is None or source_language == "" or source_language not in language_code_list:
                 raise HTTPException(status_code=400, detail="Unsupported language!")
-        except Exception as ex:
+        except Exception:
             raise HTTPException(status_code=400, detail="Unsupported language!")
 
         if text is not None and text != "":
             logger.info({"text": text, "source_language": source_language})
+            src_lang_text = text
             eng_text, error_message = translate_text_to_english(text, source_language)
         else:
             if not is_url(audio) and not is_base64(audio):
@@ -130,24 +135,33 @@ async def query_context_extraction(request: ContextRequest):
             logger.info(ex)
             raise HTTPException(status_code=503, detail="Unable to parse configurations!")
 
-        logger.info("instructions:: ", instructions)
-        logger.info("examples:: ", examples)
-        logger.info("query:: ", eng_text)
+        logger.info({"instructions": instructions})
+        logger.info({"examples": examples})
+        logger.info({"query": eng_text})
         try:
             response = await invokeLLM(instructions, examples, eng_text)
-            logger.info("LLM response:: ", response)
-            strResp = json.dumps(response["answer"]).replace("\\\"answer\\\": ", "")
-            jsonResp = json.loads(strResp)
-            answer = json.loads(jsonResp)
-            logger.info("answer:: ", answer)
+            str_resp = json.dumps(response["answer"]).replace("\\\"answer\\\": ", "")
+            json_resp = json.loads(str_resp)
+            answer: dict = json.loads(json_resp)
+            print("answer:: ", answer)
         except Exception as ex:
             logger.info(type(ex))  # the exception type
             logger.info(ex.args)  # arguments stored in .args
             logger.info(ex)
             raise HTTPException(status_code=503, detail="Failed to generate a response!")
 
+    if len(eng_text.split(" ")) < int(min_words_length):
+        updated_answer = {"keywords": answer["keywords"]} if "keywords" in answer else {}
+    else:
+        updated_answer = {key: value for key, value in answer.items() if value != ["Any"]}
+
+    print("updated_answer:: ", updated_answer)
     response = {
-        "context": answer
+        "input": {
+            "sourceText": src_lang_text,
+            "englishText": eng_text
+        },
+        "context": updated_answer
     }
     return response
 
@@ -198,13 +212,13 @@ async def translator(request: TranslationRequest) -> TranslationResponse:
         try:
             if source_language is None or source_language == "" or source_language not in language_code_list:
                 raise HTTPException(status_code=400, detail="Unsupported source language!")
-        except Exception as ex:
+        except Exception:
             raise HTTPException(status_code=400, detail="Unsupported source language!")
 
         try:
             if target_language is None or target_language == "" or target_language not in language_code_list:
                 raise HTTPException(status_code=400, detail="Unsupported target language!")
-        except Exception as ex:
+        except Exception:
             raise HTTPException(status_code=400, detail="Unsupported target language!")
 
         if target_format == "text" and text is not None and text != "":
@@ -242,10 +256,10 @@ async def translator(request: TranslationRequest) -> TranslationResponse:
             trans_audio = convert_to_audio(trans_text, target_language)
 
     response = TranslationResponse()
-    opResp = OutputResponse()
-    opResp.text = trans_text
-    opResp.audio = trans_audio
-    response.translation = opResp
+    op_resp = OutputResponse()
+    op_resp.text = trans_text
+    op_resp.audio = trans_audio
+    response.translation = op_resp
     logger.info(msg=response)
     return response
 
