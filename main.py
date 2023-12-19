@@ -145,15 +145,14 @@ async def query_context_extraction(request: ContextRequest):
             answer: dict = json.loads(json_resp)
             print("answer:: ", answer)
         except Exception as ex:
-            logger.info(type(ex))  # the exception type
-            logger.info(ex.args)  # arguments stored in .args
+            updated_answer = {}
             logger.info(ex)
-            raise HTTPException(status_code=503, detail="Failed to generate a response!")
+            logger.error(f"Exception occurred: {ex}", exc_info=True)
 
     if len(eng_text.split(" ")) < int(min_words_length):
         updated_answer = {"keywords": answer["keywords"]} if "keywords" in answer else {}
     else:
-        updated_answer = {key: value for key, value in answer.items() if value != ["Any"]}
+        updated_answer = remove_keys_with_any(answer) if answer is not None else {}
 
     print("updated_answer:: ", updated_answer)
     response = {
@@ -275,3 +274,15 @@ def convert_to_audio(text, target_language):
         return trans_audio_url
     else:
         raise HTTPException(status_code=503, detail="Failed to generate a response!")
+
+
+def remove_keys_with_any(dict_obj):
+    new_dict = {}
+    for key, value in dict_obj.items():
+        if isinstance(value, list) and "Any" in value:
+            continue
+        elif isinstance(value, dict):
+            new_dict[key] = remove_keys_with_any(value)
+        else:
+            new_dict[key] = value
+    return new_dict
