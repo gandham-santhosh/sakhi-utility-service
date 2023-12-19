@@ -145,14 +145,15 @@ async def query_context_extraction(request: ContextRequest):
             answer: dict = json.loads(json_resp)
             print("answer:: ", answer)
         except Exception as ex:
-            updated_answer = {}
+            updated_answer = None
+            answer = None
             logger.info(ex)
             logger.error(f"Exception occurred: {ex}", exc_info=True)
 
     if len(eng_text.split(" ")) < int(min_words_length):
-        updated_answer = {"keywords": answer["keywords"]} if "keywords" in answer else {}
+        updated_answer = {"keywords": answer["keywords"]} if answer is not None and "keywords" in answer else None
     else:
-        updated_answer = remove_keys_with_any(answer) if answer is not None else {}
+        updated_answer = remove_keys_with_any(answer) if answer is not None else None
 
     print("updated_answer:: ", updated_answer)
     response = {
