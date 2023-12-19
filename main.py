@@ -155,7 +155,6 @@ async def query_context_extraction(request: ContextRequest):
     else:
         updated_answer = remove_keys_with_any(answer) if answer is not None else None
 
-    print("updated_answer:: ", updated_answer)
     response = {
         "input": {
             "sourceText": src_lang_text,
@@ -163,6 +162,7 @@ async def query_context_extraction(request: ContextRequest):
         },
         "context": updated_answer
     }
+    logger.info({"response": response})
     return response
 
 
