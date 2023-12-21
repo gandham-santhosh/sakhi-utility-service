@@ -226,6 +226,8 @@ def text_to_speech(language, text, gender='female'):
         process_time = time.time() - start_time
         response.raise_for_status()
         log_success_telemetry_event(url, "POST", payload, process_time, status_code=response.status_code)
+        audio_content = response.json()["pipelineResponse"][0]['audio'][0]['audioContent']
+        audio_content = base64.b64decode(audio_content)
     except requests.exceptions.RequestException as e:
         process_time = time.time() - start_time
         log_failed_telemetry_event(url, "POST", payload, process_time, status_code=e.response.status_code,

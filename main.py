@@ -145,11 +145,11 @@ async def query_context_extraction(request: ContextRequest):
         logger.info({"query": eng_text})
         try:
             response = await invokeLLM(instructions, examples, eng_text)
-            print(json.dumps(response["answer"]))
+            logger.info(json.dumps(response["answer"]))
             str_resp = json.dumps(response["answer"]).replace("\\\"answer\\\": ", "")
             json_resp = json.loads(str_resp)
             answer: dict = json.loads(json_resp)
-            print("answer:: ", answer)
+            logger.info("answer:: ", answer)
         except Exception as ex:
             updated_answer = None
             answer = None
@@ -175,7 +175,6 @@ async def query_context_extraction(request: ContextRequest):
 @app.post("/v1/translation", tags=["API for translation of text and audio in English and Indic languages"])
 async def translator(request: TranslationRequest) -> TranslationResponse:
     load_dotenv()
-
     text = None
     audio = None
     source_language = None
