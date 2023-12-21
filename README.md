@@ -1,10 +1,10 @@
-# sakhi-context-service
+# 1. sakhi-context-service
 
 
 [Jugalbandi API](https://api.jugalbandi.ai/docs) is a system of APIs that allows users to build Q&A style applications on their private and public datasets. The system creates Open API 3.0 specification endpoints using FastAPI.
 
 
-# 🔧 1. Installation
+# 2. 🔧 1. Installation
 
 To use the code, you need to follow these steps:
 
@@ -36,7 +36,7 @@ To use the code, you need to follow these steps:
     OCI_ACCESS_KEY_ID=<oracle_access_key_id>
     ```
 
-# 🏃🏻 2. Running
+# 3. 🏃🏻 2. Running
 
 Once the above installation steps are completed, run the following command in home directory of the repository in terminal
 
@@ -44,19 +44,19 @@ Once the above installation steps are completed, run the following command in ho
 uvicorn main:app
 ```
 
-# 📃 3. API Specification and Documentation
+# 4. 📃 3. API Specification and Documentation
 
-### `POST /v1/context`
+### 4.1. `POST /v1/context`
 
-#### API Function
+#### 4.1.1. API Function
 API is used to extract context information of chosen attributes from an user's query. To achieve the same, Few-shot learning has been implemented which requires a set of 'examples' and necessary 'instructions' to be given to LLM (openAI) in order to generate an answer in the instructed format. Configuration of 'instructions' and 'examples' are available in 'config.ini'.
 
-#### Supported language codes in request:
+#### 4.1.2. Supported language codes in request:
 ```text
 en,bn,gu,hi,kn,ml,mr,or,pa,ta,te
 ```
 
-#### Request
+#### 4.1.3. Request
 
 Required inputs are 'text', 'audio' and 'language'.
 
@@ -64,27 +64,37 @@ Either of the 'text'(string) or 'audio'(string) should be present. If both the v
 
 ```json
 {
-    "text": "How to Teach Kids to Play Games",
-    "language": "en"
+    "text": "ನನ್ನ ಮಗುವಿಗೆ ವಾಟರ್ ಪೇಂಟಿಂಗ್ ಅನ್ನು ಹೇಗೆ ಕಲಿಸುವುದು",
+    "language": "kn"
 }
 ```
 
-#### Successful Response
+#### 4.1.4. Successful Response
 
 ```json
 {
+    "input": {
+        "sourceText": "ನನ್ನ ಮಗುವಿಗೆ ವಾಟರ್ ಪೇಂಟಿಂಗ್ ಅನ್ನು ಹೇಗೆ ಕಲಿಸುವುದು",
+        "englishText": "How to Teach My Child Water Painting"
+    },
     "context": {
+        "category": [
+            "Activities"
+        ],
         "persona": [
-            "Parent",
-            "Teacher"
+            "Parent"
         ],
         "age": [
-            "3-8"
+            "3-5"
         ],
-        "format": [
-            "video",
-            "document",
-            "audio"
+        "keywords": [
+            "water painting"
+        ],
+        "domain": [
+            "Aesthetic and Cultural Development"
+        ],
+        "curricularGoal": [
+            "CG-12: Children develop abilities and sensibilities in visual and performing arts and express their emotions through art in meaningful and joyful ways"
         ]
     }
 }
@@ -134,15 +144,67 @@ Either of the 'text'(string) or 'audio'(string) should be present in the 'input'
 
 ---
 
-# 🚀 4. Deployment
+# 5. 🚀 4. Deployment
 
 This repository comes with a Dockerfile. You can use this dockerfile to deploy your version of this application to Cloud Run.
 Make the necessary changes to your dockerfile with respect to your new changes. (Note: The given Dockerfile will deploy the base code without any error, provided you added the required environment variables (mentioned in the .env file) to either the Dockerfile or the cloud run revision)
 
 
-## Feature request and contribution
+## 5.1. Feature request and contribution
 
 *   We are currently in the alpha stage and hence need all the inputs, feedbacks and contributions we can.
 *   Kindly visit our project board to see what is it that we are prioritizing.
 
  
+## 5.2. UTILITY SERVICE SERVER DEPLOYMENT:
+### 5.2.1. Making System ready for Docker:
+```text
+sudo apt-get update
+sudo apt-get install ca-certificates curl gnupg
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+
+# Add the repository to Apt sources:
+echo \
+"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+$(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+```
+### 5.2.2. Installing latest Docker:
+```text
+$ sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin	
+```
+### 5.2.3. Installing PIP:
+```text
+$ sudo apt install python3-pip
+```
+### 5.2.4. Clone Repo:
+```text
+$ git clone https://github.com/DJP-Digital-Jaaduii-Pitara/sakhi-utility-service.git
+```
+### 5.2.5. CD to cloned repo:
+```text
+$ cd sakhi-utility-service
+```
+### 5.2.6. Build Docker Image of the repo:
+```text
+$ sudo docker build -t sakhiutilityimage .
+```
+### 5.2.7. Create Container:
+```text
+$ sudo docker run -d -p 8000:8000 --name sakhi-utility-service \
+-e OPENAI_API_KEY=$OPENAI_API_KEY \
+-e LOG_LEVEL=INFO  \
+-e BHASHINI_ENDPOINT_URL=$BHASHINI_ENDPOINT_URL \
+-e BHASHINI_API_KEY=$BHASHINI_API_KEY \
+-e OCI_ENDPOINT_URL=$OCI_ENDPOINT_URL \
+-e OCI_REGION_NAME=$OCI_REGION_NAME \
+-e DISABLE_NEST_ASYNCIO=True \
+-e OCI_BUCKET_NAME=$OCI_BUCKET_NAME \
+-e OCI_SECRET_ACCESS_KEY=$OCI_SECRET_ACCESS_KEY \
+-e OCI_ACCESS_KEY_ID=$OCI_ACCESS_KEY_ID \
+-e TELEMETRY_ENDPOINT_URL=$TELEMETRY_ENDPOINT_URL \
+sakhiutilityimage
+```
