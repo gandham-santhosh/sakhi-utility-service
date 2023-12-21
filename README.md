@@ -64,8 +64,8 @@ Either of the 'text'(string) or 'audio'(string) should be present. If both the v
 
 ```json
 {
-    "text": "How to Teach Kids to Play Games",
-    "language": "en"
+    "text": "ನನ್ನ ಮಗುವಿಗೆ ವಾಟರ್ ಪೇಂಟಿಂಗ್ ಅನ್ನು ಹೇಗೆ ಕಲಿಸುವುದು",
+    "language": "kn"
 }
 ```
 
@@ -73,18 +73,28 @@ Either of the 'text'(string) or 'audio'(string) should be present. If both the v
 
 ```json
 {
+    "input": {
+        "sourceText": "ನನ್ನ ಮಗುವಿಗೆ ವಾಟರ್ ಪೇಂಟಿಂಗ್ ಅನ್ನು ಹೇಗೆ ಕಲಿಸುವುದು",
+        "englishText": "How to Teach My Child Water Painting"
+    },
     "context": {
+        "category": [
+            "Activities"
+        ],
         "persona": [
-            "Parent",
-            "Teacher"
+            "Parent"
         ],
         "age": [
-            "3-8"
+            "3-5"
         ],
-        "format": [
-            "video",
-            "document",
-            "audio"
+        "keywords": [
+            "water painting"
+        ],
+        "domain": [
+            "Aesthetic and Cultural Development"
+        ],
+        "curricularGoal": [
+            "CG-12: Children develop abilities and sensibilities in visual and performing arts and express their emotions through art in meaningful and joyful ways"
         ]
     }
 }
@@ -145,4 +155,58 @@ Make the necessary changes to your dockerfile with respect to your new changes. 
 *   We are currently in the alpha stage and hence need all the inputs, feedbacks and contributions we can.
 *   Kindly visit our project board to see what is it that we are prioritizing.
 
+
+---
  
+# UTILITY SERVICE SERVER DEPLOYMENT:
+### Making System ready for Docker:
+```text
+sudo apt-get update
+sudo apt-get install ca-certificates curl gnupg
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+
+# Add the repository to Apt sources:
+echo \
+"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+$(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+```
+### Installing latest Docker: 
+```text
+$ sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin	
+```
+### Installing PIP: 
+```text
+$ sudo apt install python3-pip
+```
+### Clone Repo: 
+```text
+$ git clone https://github.com/DJP-Digital-Jaaduii-Pitara/sakhi-utility-service.git
+```
+### CD to cloned repo: 
+```text
+$ cd sakhi-utility-service
+```
+### Build Docker Image of the repo: 
+```text
+$ sudo docker build -t sakhiutilityimage .
+```
+### Create Container: 
+```text
+$ sudo docker run -d -p 8000:8000 --name sakhi-utility-service \
+-e OPENAI_API_KEY=$OPENAI_API_KEY \
+-e LOG_LEVEL=INFO  \
+-e BHASHINI_ENDPOINT_URL=$BHASHINI_ENDPOINT_URL \
+-e BHASHINI_API_KEY=$BHASHINI_API_KEY \
+-e OCI_ENDPOINT_URL=$OCI_ENDPOINT_URL \
+-e OCI_REGION_NAME=$OCI_REGION_NAME \
+-e DISABLE_NEST_ASYNCIO=True \
+-e OCI_BUCKET_NAME=$OCI_BUCKET_NAME \
+-e OCI_SECRET_ACCESS_KEY=$OCI_SECRET_ACCESS_KEY \
+-e OCI_ACCESS_KEY_ID=$OCI_ACCESS_KEY_ID \
+-e TELEMETRY_ENDPOINT_URL=$TELEMETRY_ENDPOINT_URL \
+sakhiutilityimage
+```
