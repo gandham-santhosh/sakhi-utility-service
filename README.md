@@ -1,10 +1,10 @@
-# 1. sakhi-context-service
+# sakhi-context-service
 
 
 [Jugalbandi API](https://api.jugalbandi.ai/docs) is a system of APIs that allows users to build Q&A style applications on their private and public datasets. The system creates Open API 3.0 specification endpoints using FastAPI.
 
 
-# 2. 🔧 1. Installation
+# 🔧 1. Installation
 
 To use the code, you need to follow these steps:
 
@@ -36,7 +36,7 @@ To use the code, you need to follow these steps:
     OCI_ACCESS_KEY_ID=<oracle_access_key_id>
     ```
 
-# 3. 🏃🏻 2. Running
+# 🏃🏻 2. Running
 
 Once the above installation steps are completed, run the following command in home directory of the repository in terminal
 
@@ -44,19 +44,19 @@ Once the above installation steps are completed, run the following command in ho
 uvicorn main:app
 ```
 
-# 4. 📃 3. API Specification and Documentation
+# 📃 3. API Specification and Documentation
 
-### 4.1. `POST /v1/context`
+### `POST /v1/context`
 
-#### 4.1.1. API Function
+#### API Function
 API is used to extract context information of chosen attributes from an user's query. To achieve the same, Few-shot learning has been implemented which requires a set of 'examples' and necessary 'instructions' to be given to LLM (openAI) in order to generate an answer in the instructed format. Configuration of 'instructions' and 'examples' are available in 'config.ini'.
 
-#### 4.1.2. Supported language codes in request:
+#### Supported language codes in request:
 ```text
 en,bn,gu,hi,kn,ml,mr,or,pa,ta,te
 ```
 
-#### 4.1.3. Request
+#### Request
 
 Required inputs are 'text', 'audio' and 'language'.
 
@@ -69,7 +69,7 @@ Either of the 'text'(string) or 'audio'(string) should be present. If both the v
 }
 ```
 
-#### 4.1.4. Successful Response
+#### Successful Response
 
 ```json
 {
@@ -144,20 +144,20 @@ Either of the 'text'(string) or 'audio'(string) should be present in the 'input'
 
 ---
 
-# 5. 🚀 4. Deployment
+# 🚀 4. Deployment
 
 This repository comes with a Dockerfile. You can use this dockerfile to deploy your version of this application to Cloud Run.
 Make the necessary changes to your dockerfile with respect to your new changes. (Note: The given Dockerfile will deploy the base code without any error, provided you added the required environment variables (mentioned in the .env file) to either the Dockerfile or the cloud run revision)
 
 
-## 5.1. Feature request and contribution
+## Feature request and contribution
 
 *   We are currently in the alpha stage and hence need all the inputs, feedbacks and contributions we can.
 *   Kindly visit our project board to see what is it that we are prioritizing.
 
  
-## 5.2. UTILITY SERVICE SERVER DEPLOYMENT:
-### 5.2.1. Making System ready for Docker:
+# UTILITY SERVICE SERVER DEPLOYMENT:
+### Making System ready for Docker:
 ```text
 sudo apt-get update
 sudo apt-get install ca-certificates curl gnupg
@@ -172,27 +172,27 @@ $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
 sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 sudo apt-get update
 ```
-### 5.2.2. Installing latest Docker:
+### Installing latest Docker: 
 ```text
 $ sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin	
 ```
-### 5.2.3. Installing PIP:
+### Installing PIP: 
 ```text
 $ sudo apt install python3-pip
 ```
-### 5.2.4. Clone Repo:
+### Clone Repo: 
 ```text
 $ git clone https://github.com/DJP-Digital-Jaaduii-Pitara/sakhi-utility-service.git
 ```
-### 5.2.5. CD to cloned repo:
+### CD to cloned repo: 
 ```text
 $ cd sakhi-utility-service
 ```
-### 5.2.6. Build Docker Image of the repo:
+### Build Docker Image of the repo: 
 ```text
 $ sudo docker build -t sakhiutilityimage .
 ```
-### 5.2.7. Create Container:
+### Create Container: 
 ```text
 $ sudo docker run -d -p 8000:8000 --name sakhi-utility-service \
 -e OPENAI_API_KEY=$OPENAI_API_KEY \
