@@ -1,3 +1,5 @@
+import json
+
 from fastapi import Request
 import requests
 import time
@@ -125,12 +127,23 @@ class TelemetryLogger:
         return eventCData
     
     def __getEventEDataParams(self, eventInput: dict):
-        body = str(eventInput.get("body")).replace("'", "")
+        flattened_dict = self.__flatten_dict(eventInput.get("body"))
         eventEDataParams = [
-            { "request":  body },
             { "method": str(eventInput.get("method")) },
             { "url": str(eventInput.get("url")) },
             { "status": eventInput.get("status_code") }, 
             { "duration": int(eventInput.get("duration")) }
         ]
+        for item in flattened_dict.items():
+            eventEDataParams.append({item[0]: item[1]})
         return eventEDataParams
+
+    def __flatten_dict(self, d, parent_key='', sep='_'):
+        flattened = {}
+        for k, v in d.items():
+            new_key = f"{parent_key}{sep}{k}" if parent_key else k
+            if isinstance(v, dict):
+                flattened.update(self.__flatten_dict(v, new_key, sep=sep))
+            else:
+                flattened[new_key] = v
+        return flattened
