@@ -124,11 +124,15 @@ async def query_context_extraction(request: ContextRequest):
             logger.info({"text": text, "source_language": source_language})
             src_lang_text = text
             eng_text, error_message = translate_text_to_english(text, source_language)
+            if error_message:
+                raise HTTPException(status_code=503, detail="Failed to translate!")
         else:
             if not is_url(audio) and not is_base64(audio):
                 raise HTTPException(status_code=422, detail="Invalid audio input!")
             logger.info({"source_language:", source_language})
             src_lang_text, eng_text, error_message = transcribe_audio_to_reg_eng_text(audio, source_language)
+            if error_message:
+                raise HTTPException(status_code=503, detail="Failed to translate!")
             logger.info({"src_lang_text:", src_lang_text, "eng_text:", eng_text})
 
         try:
