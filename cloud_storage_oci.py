@@ -21,7 +21,7 @@ bucket_name = os.environ["OCI_BUCKET_NAME"]
 def upload_file_object(file_name, object_name=None):
     """Upload a file to an OCI bucket
 
-    :param file_name: File to upload    
+    :param file_name: File to upload
     :param object_name: S3 object name. If not specified then file_name is used
     :return: True if file was uploaded, else False
     """
@@ -31,7 +31,7 @@ def upload_file_object(file_name, object_name=None):
         object_name = os.path.basename(file_name)
 
     try:
-        s3_client.upload_file(file_name, bucket_name, object_name, ExtraArgs={'ACL': 'public-read'})
+        s3_client.upload_file(file_name, bucket_name, object_name, ExtraArgs={'ACL': 'public-read', "ContentType": "audio/mpeg"})
         logger.info(f"File uploaded to OCI Object Storage bucket: {bucket_name}")
     except ClientError as e:
         logger.error(f"Exception uploading a file: {e}", exc_info=True)
