@@ -53,7 +53,6 @@ config = configparser.ConfigParser()
 config.read('config.ini')
 language_code_list = config['lang_code']["supported_lang_codes"].split(",")
 
-
 # Telemetry API logs middleware
 app.add_middleware(TelemetryMiddleware)
 
@@ -148,11 +147,10 @@ async def query_context_extraction(request: ContextRequest):
         logger.info({"examples": examples})
         logger.info({"query": eng_text})
         try:
-            response = await invokeLLM(instructions, examples, eng_text)
-            logger.info(json.dumps(response["answer"]))
-            str_resp = json.dumps(response["answer"]).replace("\\\"answer\\\": ", "")
-            json_resp = json.loads(str_resp)
-            answer: dict = json.loads(json_resp)
+            response = invokeLLM(instructions, examples, eng_text)
+            response = "{" + response["content"] + "}"
+            json_resp = json.loads(response)
+            answer: dict = json_resp["answer"]
             logger.info("answer:: ", answer)
         except Exception as ex:
             updated_answer = None
