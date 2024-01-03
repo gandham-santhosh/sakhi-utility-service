@@ -1,8 +1,7 @@
 import outlines
 import os
 
-from guidance import models, gen
-from guidance import user, system, assistant
+from openai import AzureOpenAI
 
 
 @outlines.prompt
@@ -29,21 +28,26 @@ def few_shots(instructions, examples, question):
     A:
     """
 
-gpt = models.OpenAI("gpt-3.5-turbo", api_key=os.environ["OPENAI_API_KEY"])
-gpt.max_calls = 1200
-gpt.temperature = 0
 
-async def invokeLLM(instructions, examples, question):
+client = AzureOpenAI(
+    azure_endpoint=os.environ["OPENAI_API_BASE"],
+    api_key=os.environ["OPENAI_API_KEY"],
+    api_version=os.environ["OPENAI_API_VERSION"]
+)
+gpt_model = os.environ["gpt_model"]
+
+
+def invokeLLM(instructions, examples, question):
     prompt = few_shots(instructions, examples, question)
     print("PROMPT::: ", prompt)
 
-    with system():
-        lm = gpt + prompt
+    res = client.chat.completions.create(
+        model=gpt_model,
+        temperature=0,
+        messages=[
+            {"role": "system", "content": prompt},
+            {"role": "user", "content": question}
+        ],
+    )
 
-    with user():
-        lm += question
-
-    with assistant():
-        lm += gen("answer", stop=".")
-
-    return lm
+    return res.choices[0].message.model_dump()
