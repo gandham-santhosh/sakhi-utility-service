@@ -22,9 +22,13 @@ To use the code, you need to follow these steps:
 
 3. You will need a OCI account to store the audio file for response.
 
-4. create another file **.env** which will hold the development credentials and add the following variables. Update the openai_api_key, OCI object storage details and bhashini endpoint URL and API Key.
+4. create another file **.env** which will hold the development credentials and add the following variables. Update the azure openai details, OCI object storage details and bhashini endpoint URL and API Key.
 
     ```bash
+    OPENAI_API_VERSION=<AZURE_OPENAI_API_VERSION>
+    OPENAI_API_BASE=<AZURE_OPENAI_BASE_URL>
+    OPENAI_API_TYPE=azure 
+    GPT_MODEL=<AZURE_OPENAI_MODEL_NAME>
     OPENAI_API_KEY=<your_openai_key>
     LOG_LEVEL=<log_level>  # INFO, DEBUG, ERROR
     BHASHINI_ENDPOINT_URL=<your_bhashini_endpoint_url>
@@ -34,6 +38,8 @@ To use the code, you need to follow these steps:
     OCI_BUCKET_NAME=<oracle_bucket_name>
     OCI_SECRET_ACCESS_KEY=<oracle_secret_access_key>
     OCI_ACCESS_KEY_ID=<oracle_access_key_id>
+    TELEMETRY_ENDPOINT_URL=<TELEMETRY_ENDPOINT_URL> 
+    TELEMETRY_LOG_ENABLED=<TELEMETRY_LOG_ENABLED> 
     ```
 
 # 🏃🏻 2. Running
@@ -197,6 +203,10 @@ $ sudo docker build -t sakhiutilityimage .
 ### Create Container: 
 ```text
 $ sudo docker run -d -p 8000:8000 --name sakhi-utility-service \
+-e OPENAI_API_VERSION=$AZURE_OPENAI_API_VERSION 
+-e OPENAI_API_BASE=$AZURE_OPENAI_BASE_URL
+-e OPENAI_API_TYPE=azure 
+-e GPT_MODEL=$AZURE_OPENAI_MODEL_NAME
 -e OPENAI_API_KEY=$OPENAI_API_KEY \
 -e LOG_LEVEL=INFO  \
 -e BHASHINI_ENDPOINT_URL=$BHASHINI_ENDPOINT_URL \
