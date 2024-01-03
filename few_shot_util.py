@@ -34,7 +34,7 @@ client = AzureOpenAI(
     api_key=os.environ["OPENAI_API_KEY"],
     api_version=os.environ["OPENAI_API_VERSION"]
 )
-gpt_model = os.environ["gpt_model"]
+gpt_model = os.environ["GPT_MODEL"]
 
 
 def invokeLLM(instructions, examples, question):
