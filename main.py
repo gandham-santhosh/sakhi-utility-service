@@ -1,9 +1,8 @@
-import configparser
-
 from fastapi import FastAPI, HTTPException, status
 from pydantic import BaseModel
 
 from cloud_storage_oci import *
+from config_util import get_config_value
 from few_shot_util import *
 from io_processing import *
 from logger import logger
@@ -49,9 +48,10 @@ class TranslationResponse(BaseModel):
     translation: OutputResponse = None
 
 
-config = configparser.ConfigParser()
-config.read('config.ini')
-language_code_list = config['lang_code']["supported_lang_codes"].split(",")
+
+language_code_list = get_config_value('lang_code', 'supported_lang_codes', None).split(",")
+
+
 
 # Telemetry API logs middleware
 app.add_middleware(TelemetryMiddleware)
@@ -88,10 +88,7 @@ async def query_context_extraction(request: ContextRequest):
     source_language = None
     updated_answer = None
 
-    min_words_length = config['min_words']['length']
-
-    load_dotenv()
-
+    min_words_length = get_config_value('min_words', 'length', None)
     logger.info({"text": request.text, "audio": request.audio, "source_language": request.language})
     if request.text is not None:
         text = request.text.strip()
@@ -99,8 +96,6 @@ async def query_context_extraction(request: ContextRequest):
         audio = request.audio.strip()
     if request.language is not None:
         source_language = request.language.strip().lower()
-
-    few_shot_config = config['few_shot.config']
 
     logger.info({"text": text, "audio": audio, "source_language": source_language})
     if text is None and audio is None:
@@ -135,8 +130,8 @@ async def query_context_extraction(request: ContextRequest):
             logger.info({"src_lang_text:", src_lang_text, "eng_text:", eng_text})
 
         try:
-            instructions = few_shot_config['instructions']
-            examples = json.loads(few_shot_config['examples'])
+            instructions = get_config_value('few_shot_config', 'instructions', None)
+            examples = json.loads(get_config_value('few_shot_config', 'examples', None))
         except Exception as ex:
             logger.info(type(ex))  # the exception type
             logger.info(ex.args)  # arguments stored in .args
@@ -153,7 +148,6 @@ async def query_context_extraction(request: ContextRequest):
             answer: dict = json_resp["answer"]
             logger.info("answer:: ", answer)
         except Exception as ex:
-            updated_answer = None
             answer = None
             logger.info(ex)
             logger.error(f"Exception occurred: {ex}", exc_info=True)
