@@ -3,6 +3,8 @@ import os
 
 from openai import AzureOpenAI
 
+from config_util import get_config_value
+
 
 @outlines.prompt
 def few_shots(instructions, examples, question):
@@ -34,7 +36,7 @@ client = AzureOpenAI(
     api_key=os.environ["OPENAI_API_KEY"],
     api_version=os.environ["OPENAI_API_VERSION"]
 )
-gpt_model = os.environ["GPT_MODEL"]
+gpt_model = get_config_value("llm", "gpt_model", None)
 
 
 def invokeLLM(instructions, examples, question):
