@@ -2,9 +2,11 @@ import time
 import json
 from fastapi import Request
 from starlette.middleware.base import BaseHTTPMiddleware
+
+from config_util import get_config_value
 from telemetry_logger import TelemetryLogger
 from starlette.types import Message
-
+from logger import logger
 
 async def set_body(request: Request, body: bytes):
     async def receive() -> Message:
@@ -18,7 +20,10 @@ async def get_body(request: Request) -> bytes:
     await set_body(request, body)
     return body
 
+
 telemetryLogger = TelemetryLogger()
+telemetry_log_enabled = get_config_value('telemetry', 'telemetry_log_enabled', None).lower() == "true"
+
 
 class TelemetryMiddleware(BaseHTTPMiddleware):
     def __init__(
@@ -45,9 +50,12 @@ class TelemetryMiddleware(BaseHTTPMiddleware):
                 "url": request.url
             }
             event.update(request.headers)
-            if response.status_code == 200:
-                event = telemetryLogger.prepare_log_event(eventInput=event, message="success")
-            else:
-                event = telemetryLogger.prepare_log_event(eventInput=event, elevel="ERROR", message="failed")
-            telemetryLogger.add_event(event)
+            logger.info({"label": "api_call", "event": event})
+
+            if telemetry_log_enabled:
+                if response.status_code == 200:
+                    event = telemetryLogger.prepare_log_event(eventInput=event, message="success")
+                else:
+                    event = telemetryLogger.prepare_log_event(eventInput=event, elevel="ERROR", message="failed")
+                telemetryLogger.add_event(event)
         return response
