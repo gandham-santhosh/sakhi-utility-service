@@ -221,3 +221,25 @@ $ sudo docker run -d -p 8000:8000 --name sakhi-utility-service \
 -e TELEMETRY_LOG_ENABLED=$TELEMETRY_LOG_ENABLED \
 sakhiutilityimage
 ```
+
+---
+
+ 
+# Configuration (config.ini)
+
+| Variable                        | Description                                                                                    | Default Value                        |
+|:--------------------------------|------------------------------------------------------------------------------------------------|--------------------------------------|
+| few_shot_config.instructions    | System prompt for GEN AI to perform the context recognition for user's query                   |                                      |
+| few_shot_config.examples        | Context examples inserted to System prompt for GEN AI to perform few shot learning             |                                      |
+| database.docs_min_score         | Minimum score of the documents based on which filtration happens on retrieved documents        | 0.4                                  |
+| lang_code.supported_lang_codes  | Supported languages by the service                                                             | en,bn,gu,hi,kn,ml,mr,or,pa,ta,te     |
+| min_words.length | Minimum length of words in user's query for which context extraction get enabled by Gen AI                    | 6                                    |
+| llm.gpt_model                   | Gen AI GPT Model value                                                                         |                                      |
+| telemetry.telemetry_log_enabled | Flag to enable or disable telemetry events logging to Sunbird Telemetry service                | true                                 |
+| telemetry.environment           | service environment from where telemetry is generated from, in telemetry service               | dev                                  |
+| telemetry.service_id            | service identifier to be passed to Sunbird telemetry service                                   |                                      |
+| telemetry.service_ver           | service version to be passed to Sunbird telemetry service                                      |                                      |
+| telemetry.actor_id              | service actor id to be passed to Sunbird telemetry service                                     |                                      |
+| telemetry.channel               | channel value to be passed to Sunbird telemetry service                                        |                                      |
+| telemetry.pdata_id              | pdata_id value to be passed to Sunbird telemetry service                                       |                                      |
+| telemetry.events_threshold      | telemetry events batch size upon which events will be passed to Sunbird telemetry service      | 5                                    |
