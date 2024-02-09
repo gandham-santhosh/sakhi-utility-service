@@ -129,20 +129,9 @@ async def query_context_extraction(request: ContextRequest):
                 raise HTTPException(status_code=503, detail="Failed to translate!")
             logger.info({"src_lang_text:", src_lang_text, "eng_text:", eng_text})
 
-        try:
-            instructions = get_config_value('few_shot_config', 'instructions', None)
-            examples = json.loads(get_config_value('few_shot_config', 'examples', None))
-        except Exception as ex:
-            logger.info(type(ex))  # the exception type
-            logger.info(ex.args)  # arguments stored in .args
-            logger.info(ex)
-            raise HTTPException(status_code=503, detail="Unable to parse configurations!")
-
-        logger.info({"instructions": instructions})
-        logger.info({"examples": examples})
         logger.info({"query": eng_text})
         try:
-            response = invokeLLM(instructions, examples, eng_text)
+            response = invokeLLM(eng_text)
             response = "{" + response["content"] + "}"
             json_resp = json.loads(response)
             answer: dict = json_resp["answer"]
