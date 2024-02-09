@@ -46,7 +46,7 @@ prompt = few_shots(instructions, examples)
 
 
 def invokeLLM(question):
-    system_rules = prompt.replace("question", question)
+    system_rules = prompt.replace("user_question", question)
     print("system_rules::: ", system_rules)
 
     res = client.chat.completions.create(
