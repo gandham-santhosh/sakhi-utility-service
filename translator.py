@@ -75,7 +75,7 @@ def log_failed_telemetry_event(url, method,  payload, process_time, status_code,
 def get_encoded_string(audio):
     if is_url(audio):
         local_filename = generate_temp_filename("mp3")
-        with requests.get(audio) as r:
+        with requests.get(audio, timeout=60) as r:
             with open(local_filename, 'wb') as f:
                 f.write(r.content)
     elif is_base64(audio):
@@ -131,7 +131,7 @@ def speech_to_text(encoded_string, input_language):
         'Content-Type': 'application/json'
     }
     try:
-        response = requests.request("POST", url, headers=headers, data=json.dumps(payload))
+        response = requests.request("POST", url, headers=headers, data=json.dumps(payload), timeout=60)
         process_time = time.time() - start_time
         response.raise_for_status()
         log_success_telemetry_event(url, "POST", payload, process_time, status_code=response.status_code)
@@ -175,7 +175,7 @@ def indic_translation(text, source, destination):
             'Content-Type': 'application/json'
         }
 
-        response = requests.request("POST", url, headers=headers, data=json.dumps(payload))
+        response = requests.request("POST", url, headers=headers, data=json.dumps(payload), timeout=60)
         process_time = time.time() - start_time
         response.raise_for_status()
         log_success_telemetry_event(url, "POST", payload, process_time, status_code=response.status_code)
@@ -225,7 +225,7 @@ def text_to_speech(language, text, gender='female'):
             'Content-Type': 'application/json'
         }
 
-        response = requests.request("POST", url, headers=headers, data=json.dumps(payload))
+        response = requests.request("POST", url, headers=headers, data=json.dumps(payload), timeout=60)
         process_time = time.time() - start_time
         response.raise_for_status()
         log_success_telemetry_event(url, "POST", payload, process_time, status_code=response.status_code)
