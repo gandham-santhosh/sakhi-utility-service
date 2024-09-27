@@ -53,10 +53,10 @@ def convert_text_to_audio(message, input_language):
         logger.info("Creating output MP3 file")
         time_stamp = time.strftime("%Y%m%d-%H%M%S")
         filename = "audio-output-" + time_stamp + ".mp3"
-        output_mp3_file = open(filename, "wb")
-        output_mp3_file.write(decoded_audio_content)
-        logger.info("Audio Response is saved as a MP3 file.")
-        return output_mp3_file, error_message
+        with open(filename, "wb") as output_mp3_file:
+            output_mp3_file.write(decoded_audio_content)
+            logger.info("Audio Response is saved as a MP3 file.")
+            return output_mp3_file, error_message
     error_message = "Text to Audio conversion failed"
     logger.error(error_message)
     return None, error_message
