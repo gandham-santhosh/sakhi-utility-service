@@ -56,7 +56,7 @@ class TelemetryLogger:
                 "events": self.events
             }
             headers = {"Content-Type": "application/json"}
-            response = requests.post(self.url + "/v1/telemetry", json=data, headers=headers)
+            response = requests.post(self.url + "/v1/telemetry", json=data, headers=headers, timeout=60)
             response.raise_for_status()
             logger.debug(f"Telemetry API request data: {data}")
             logger.info("Telemetry logs sent successfully!")
