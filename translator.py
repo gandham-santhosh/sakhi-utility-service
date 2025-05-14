@@ -8,6 +8,7 @@ from pydub import AudioSegment
 
 from audio_verifier_util import is_url, is_base64, generate_temp_filename
 from telemetry_logger import TelemetryLogger
+from security import safe_requests
 
 telemetryLogger =  TelemetryLogger()
 
@@ -75,7 +76,7 @@ def log_failed_telemetry_event(url, method,  payload, process_time, status_code,
 def get_encoded_string(audio):
     if is_url(audio):
         local_filename = generate_temp_filename("mp3")
-        with requests.get(audio) as r:
+        with safe_requests.get(audio) as r:
             with open(local_filename, 'wb') as f:
                 f.write(r.content)
     elif is_base64(audio):
